@@ -1,0 +1,125 @@
+========================================
+  聊天紀錄 - 2026/07/21
+========================================
+
+--- 開發 FastAPI 股票查詢 API (practice4.py) ---
+
+[需求] 使用 FastAPI 建立股票查詢系統，支援 1天/1週/1年/最近5日 查詢。
+
+[建立 practice4.py]
+- 使用 yfinance 抓取 Yahoo Finance 股票資料
+- 建立 GET /stock/{symbol} 端點，支援 period 參數 (1d, 5d, 1w, 1y)
+- 回傳 JSON：symbol, period, count, data (OHLCV)
+
+[問題] 訪問根路徑 / 出現 404
+[解決] 根路徑沒有定義路由，加上 @app.get("/") 端點
+
+[需求] 加入市場後綴選項，預設為 .TW
+[實作] 
+- 前端加入市場下拉選單（台灣 .TW、香港 .HK、倫敦 .L、美股 空字串）
+- 後端接收 market 參數，組合成 {symbol}{market} 查詢
+- 台股純數字自動加 .TW 後綴
+
+[需求] 加入公司名稱顯示
+[實作] 
+- 從 yfinance ticker.info 取得 shortName
+- 顯示在查詢結果上方
+
+[需求] 顯示中文公司名稱（如台積電）
+[實作]
+- 台股從台灣證交所 TWSE API (STOCK_DAY) 抓取 title 中的中文名稱
+- 新增 get_twse_name() 函式
+- yfinance 只有英文名，TWSE API 補足中文名
+
+[需求] 加入「1個月」時間區間選項
+[實作]
+- PERIOD_MAP 加入 "1m": {"period": "1mo", "interval": "1d"}
+- 下拉選單加入「1 個月」選項
+
+[需求] 加入股票背景圖
+[實作]
+- 使用 Unsplash 股票交易圖片作為背景（半透明）
+- 內容區塊用白色半透明卡片包覆
+- 深藍色系配色，金融風格
+- 表頭改深藍色，表格加斑馬紋
+
+[需求] 將 Open/High/Low/Close/Volume 改為中文
+[實作] 改為：開盤價、最高價、最低價、收盤價、成交量
+
+[需求] 漲跌加入顏色，依地區不同
+[實作]
+- 新增「漲跌」欄位，顯示差額和百分比
+- 台股/港股：紅漲綠跌
+- 美股/其他：綠漲紅跌
+
+[需求] 加強 OpenAPI 規範
+[實作]
+- 新增 Pydantic 模型：StockRecord, StockResponse, ErrorResponse
+- 每個欄位加 description 和 examples
+- API 元資訊：title, description, version
+- 自訂 Swagger UI 路徑 /docs
+- 參數使用 Literal 型別，Swagger 自動顯示下拉選單
+- 定義 400/404/500 錯誤回應 model
+- 加入 tags、summary、description
+
+========================================
+  Gradio 獨立介面 (gradio_stock.py)
+========================================
+
+[需求] 建立獨立的 Gradio 網頁介面，直接呼叫 yfinance，不需要 FastAPI
+
+[建立 gradio_stock.py]
+- 安裝 gradio (uv add gradio)
+- 使用 gr.Blocks 建立介面
+- 直接呼叫 yfinance，不經過 FastAPI
+- 功能完整對齊 practice4.py：
+  * 股票代碼輸入
+  * 市場下拉選單（台灣/香港/倫敦/美股）
+  * 時間區間下拉選單（1天/5日/1週/1月/1年）
+  * 漲跌顏色依地區慣例
+  * 台股中文名稱從 TWSE API 取得
+
+[問題] Failed to Load Page ERR_CONNECTION_REFUSED
+[原因] Gradio 6.0 API 變更，theme 和 css 參數從 Blocks() 移到 launch()
+[解決] 將 theme 和 css 改放到 demo.launch() 中
+
+========================================
+  最終檔案結構
+========================================
+
+backend/07_21/
+├── practice4.py      # FastAPI + OpenAPI 股票查詢 API
+├── gradio_stock.py   # Gradio 獨立介面（直接呼叫 yfinance）
+├── practice1.py      # 空氣品質 AQI API
+├── practice2.py      # 空氣品質 AQI API (無 uvicorn)
+└── tools/
+    ├── __init__.py   # AQI 資料載入
+    └── source.py     # AQI Pydantic 模型
+
+========================================
+  API 端點摘要 (practice4.py)
+========================================
+
+GET /                    # HTML 網頁表單介面
+GET /docs                # Swagger UI 文件
+GET /openapi.json        # OpenAPI JSON
+GET /stock/{symbol}      # 查詢股票資料
+  參數：
+    - symbol (path): 股票代碼，如 2330、AAPL
+    - period (query): 1d, 5d, 1w, 1m, 1y（預設 1d）
+    - market (query): .TW, .HK, .L, ""（預設 .TW）
+
+========================================
+  執行指令
+========================================
+
+# FastAPI 版本
+uv run backend/07_21/practice4.py
+# 瀏覽器開啟 http://127.0.0.1:8000
+
+# Gradio 版本
+uv run backend/07_21/gradio_stock.py
+# 瀏覽器開啟 http://127.0.0.1:7860
+
+# Swagger 文件
+http://127.0.0.1:8000/docs
