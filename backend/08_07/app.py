@@ -128,10 +128,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# if __name__ == "__main__":
-#     uvicorn.run("app:app", reload=True)
-
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # 預設為 Render 的 PORT 變數
-    uvicorn.run("app:app", host="0.0.0.0", port=port)
+    uvicorn.run("app:app", reload=True)
+
+
+# if __name__ == "__main__":
+#     port = int(os.environ.get("PORT", 10000))  # 預設為 Render 的 PORT 變數
+#     uvicorn.run("app:app", host="0.0.0.0", port=port)
