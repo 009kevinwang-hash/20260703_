@@ -10,10 +10,23 @@ import matplotlib.font_manager as fm
 
 def setup_chinese_font():
     """
-    設定中文字型：先掃描系統實際存在的字型，依喜好順序挑選第一個可用的；
-    若全部不存在則使用 matplotlib 內建 DejaVu Sans，
-    避免因專案內缺少 msjh.ttc 而拋出 FileNotFoundError。
+    設定中文字型：
+    1. 若專案目錄內存在 msjh.ttc，優先載入該字型檔（確保上傳到雲端也能用）。
+    2. 否則掃描系統實際存在的字型，依喜好順序挑選第一個可用的。
+    3. 全部失敗則使用 matplotlib 內建 DejaVu Sans。
     """
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    bundled_font = os.path.join(project_dir, "msjh.ttc")
+    if os.path.exists(bundled_font):
+        try:
+            fm.fontManager.addfont(bundled_font)
+            font_name = fm.FontProperties(fname=bundled_font).get_name()
+            plt.rcParams["font.sans-serif"] = [font_name, "DejaVu Sans"]
+            plt.rcParams["axes.unicode_minus"] = False
+            return
+        except Exception:
+            pass
+
     try:
         available = {f.name for f in fm.fontManager.ttflist}
     except Exception:
