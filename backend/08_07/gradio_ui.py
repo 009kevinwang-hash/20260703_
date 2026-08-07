@@ -96,6 +96,33 @@ CSS = """
 .info-chip .v {font-size:20px; font-weight:700; color:#0f172a; margin-top:2px;}
 footer {text-align:center; color:#94a3b8; font-size:12px; margin-top:10px;}
 footer a {color:#2563eb; text-decoration:none;}
+
+@media (max-width: 900px) {
+    #hero {padding: 26px 22px;}
+    #hero h1 {font-size: 26px;}
+    .salary-card {padding: 22px 20px;}
+    .info-chip {min-width: 130px; padding: 12px 14px;}
+}
+@media (max-width: 768px) {
+    .gradio-container {padding: 0 12px;}
+    #hero {padding: 22px 18px; border-radius: 14px;}
+    #hero h1 {font-size: 22px;}
+    #hero p {font-size: 13px;}
+    .salary-card {padding: 20px 16px; border-radius: 12px;}
+    .salary-card .val {font-size: 30px;}
+    .salary-card .sub {font-size: 13px;}
+    .info-grid {gap: 8px;}
+    .info-chip {min-width: 120px; padding: 10px 12px;}
+    .info-chip .v {font-size: 16px;}
+}
+@media (max-width: 480px) {
+    #hero {padding: 18px 14px;}
+    #hero h1 {font-size: 19px;}
+    .badge {font-size: 11px; padding: 2px 10px; margin-right: 6px;}
+    .salary-card .val {font-size: 24px;}
+    .info-chip {min-width: 100%; padding: 10px 12px;}
+    .info-chip .v {font-size: 15px;}
+}
 """
 
 
