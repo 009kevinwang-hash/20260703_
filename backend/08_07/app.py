@@ -5,6 +5,7 @@ from pydantic import BaseModel,Field
 from pprint import pprint
 import joblib
 from fastapi import FastAPI,HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 import uvicorn
 import pandas as pd
@@ -117,6 +118,15 @@ def root():
     return RedirectResponse(url="/gradio")
 
 app = gr.mount_gradio_app(app, build_ui(), path="/gradio", theme=THEME, css=CSS)
+
+# 允許前端跨域呼叫 /predict 與 /train（如 Vite dev server http://localhost:3001）
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if __name__ == "__main__":
     uvicorn.run("app:app", reload=True)
