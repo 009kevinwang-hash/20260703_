@@ -6,20 +6,34 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import gradio as gr
 
-# plt.rcParams["font.sans-serif"] = ["Microsoft JhengHei", "SimHei", "Arial"]
-# plt.rcParams["axes.unicode_minus"] = False
-
 import matplotlib.font_manager as fm
-import matplotlib.pyplot as plt
 
-# 載入放在專案內的字型檔 (請確定檔案有放入 Git 並 push 上去)
-font_path = "msjh.ttc"
-fm.fontManager.addfont(font_path)
+def setup_chinese_font():
+    """
+    設定中文字型：先掃描系統實際存在的字型，依喜好順序挑選第一個可用的；
+    若全部不存在則使用 matplotlib 內建 DejaVu Sans，
+    避免因專案內缺少 msjh.ttc 而拋出 FileNotFoundError。
+    """
+    try:
+        available = {f.name for f in fm.fontManager.ttflist}
+    except Exception:
+        available = set()
+    for name in [
+        "Microsoft JhengHei",   # 微軟正黑體 (Windows)
+        "SimHei",               # 黑體 (Windows)
+        "PingFang SC",          # 苹方 (macOS)
+        "Noto Sans CJK TC",     # Noto (Linux)
+        "Arial Unicode MS",
+        "Arial",
+    ]:
+        if name in available:
+            plt.rcParams["font.sans-serif"] = [name, "DejaVu Sans"]
+            break
+    else:
+        plt.rcParams["font.sans-serif"] = ["DejaVu Sans"]
+    plt.rcParams["axes.unicode_minus"] = False
 
-plt.rcParams["font.sans-serif"] = [
-    fm.FontProperties(fname=font_path).get_name()
-]
-plt.rcParams["axes.unicode_minus"] = False  # 這行保持不變
+setup_chinese_font()
 
 
 API_BASE = os.environ.get("API_BASE_URL", "http://127.0.0.1:8000")
