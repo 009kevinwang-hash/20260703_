@@ -6,8 +6,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import gradio as gr
 
-plt.rcParams["font.sans-serif"] = ["Microsoft JhengHei", "SimHei", "Arial"]
-plt.rcParams["axes.unicode_minus"] = False
+# plt.rcParams["font.sans-serif"] = ["Microsoft JhengHei", "SimHei", "Arial"]
+# plt.rcParams["axes.unicode_minus"] = False
+
+import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
+
+# 載入放在專案內的字型檔 (請確定檔案有放入 Git 並 push 上去)
+font_path = "msjh.ttc"
+fm.fontManager.addfont(font_path)
+
+plt.rcParams["font.sans-serif"] = [
+    fm.FontProperties(fname=font_path).get_name()
+]
+plt.rcParams["axes.unicode_minus"] = False  # 這行保持不變
+
 
 API_BASE = os.environ.get("API_BASE_URL", "http://127.0.0.1:8000")
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
