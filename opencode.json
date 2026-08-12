@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "mcp": {
+    "postgres": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "postgres-mcp",
+        "--access-mode=unrestricted"
+      ],
+      "environment": {
+        "DATABASE_URI": "postgresql://saadmin:BoZHOBVFnopchaPFDgJC6Kx4wbNVh2lB@dpg-d9rcoqv10e5c73founo0-a.singapore-postgres.render.com/db_test001_m3tr"
+      }
+    }
+  }
+}
