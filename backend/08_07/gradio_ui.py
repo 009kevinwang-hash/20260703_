@@ -6,8 +6,48 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import gradio as gr
 
-plt.rcParams["font.sans-serif"] = ["Microsoft JhengHei", "SimHei", "Arial"]
-plt.rcParams["axes.unicode_minus"] = False
+import matplotlib.font_manager as fm
+
+def setup_chinese_font():
+    """
+    設定中文字型：
+    1. 若專案目錄內存在 msjh.ttc，優先載入該字型檔（確保上傳到雲端也能用）。
+    2. 否則掃描系統實際存在的字型，依喜好順序挑選第一個可用的。
+    3. 全部失敗則使用 matplotlib 內建 DejaVu Sans。
+    """
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    bundled_font = os.path.join(project_dir, "msjh.ttc")
+    if os.path.exists(bundled_font):
+        try:
+            fm.fontManager.addfont(bundled_font)
+            font_name = fm.FontProperties(fname=bundled_font).get_name()
+            plt.rcParams["font.sans-serif"] = [font_name, "DejaVu Sans"]
+            plt.rcParams["axes.unicode_minus"] = False
+            return
+        except Exception:
+            pass
+
+    try:
+        available = {f.name for f in fm.fontManager.ttflist}
+    except Exception:
+        available = set()
+    for name in [
+        "Microsoft JhengHei",   # 微軟正黑體 (Windows)
+        "SimHei",               # 黑體 (Windows)
+        "PingFang SC",          # 苹方 (macOS)
+        "Noto Sans CJK TC",     # Noto (Linux)
+        "Arial Unicode MS",
+        "Arial",
+    ]:
+        if name in available:
+            plt.rcParams["font.sans-serif"] = [name, "DejaVu Sans"]
+            break
+    else:
+        plt.rcParams["font.sans-serif"] = ["DejaVu Sans"]
+    plt.rcParams["axes.unicode_minus"] = False
+
+setup_chinese_font()
+
 
 API_BASE = os.environ.get("API_BASE_URL", "http://127.0.0.1:8000")
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -56,6 +96,33 @@ CSS = """
 .info-chip .v {font-size:20px; font-weight:700; color:#0f172a; margin-top:2px;}
 footer {text-align:center; color:#94a3b8; font-size:12px; margin-top:10px;}
 footer a {color:#2563eb; text-decoration:none;}
+
+@media (max-width: 900px) {
+    #hero {padding: 26px 22px;}
+    #hero h1 {font-size: 26px;}
+    .salary-card {padding: 22px 20px;}
+    .info-chip {min-width: 130px; padding: 12px 14px;}
+}
+@media (max-width: 768px) {
+    .gradio-container {padding: 0 12px;}
+    #hero {padding: 22px 18px; border-radius: 14px;}
+    #hero h1 {font-size: 22px;}
+    #hero p {font-size: 13px;}
+    .salary-card {padding: 20px 16px; border-radius: 12px;}
+    .salary-card .val {font-size: 30px;}
+    .salary-card .sub {font-size: 13px;}
+    .info-grid {gap: 8px;}
+    .info-chip {min-width: 120px; padding: 10px 12px;}
+    .info-chip .v {font-size: 16px;}
+}
+@media (max-width: 480px) {
+    #hero {padding: 18px 14px;}
+    #hero h1 {font-size: 19px;}
+    .badge {font-size: 11px; padding: 2px 10px; margin-right: 6px;}
+    .salary-card .val {font-size: 24px;}
+    .info-chip {min-width: 100%; padding: 10px 12px;}
+    .info-chip .v {font-size: 15px;}
+}
 """
 
 
