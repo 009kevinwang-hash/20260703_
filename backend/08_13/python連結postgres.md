@@ -9,6 +9,7 @@
 ## 目錄
 
 1. [Render PostgreSQL 是什麼](#1-render-postgresql-是什麼)
+   - [1.1 從 Render 後台取得「外部連線字串」](#11-從-render-後台取得外部連線字串)
 2. [環境準備（必做步驟）](#2-環境準備必做步驟)
 3. [使用 .env 保護密碼（核心重點）](#3-使用-env-保護密碼核心重點)
 4. [用 Python 連線 Render PostgreSQL](#4-用-python-連線-render-postgresql)
@@ -44,6 +45,26 @@ postgresql://使用者:密碼@主機:5432/資料庫名稱
 | `資料庫名稱` | 要連的資料庫名字 |
 
 **比喻**：把資料庫想成一間圖書館，連線字串就是「圖書館地址＋門禁卡」。沒有地址，你找不到地方；沒有門禁卡，你進不了門。只要把這張「地址＋門禁卡」交給 Python，它就能替你開門、進去找資料。
+
+### 1.1 從 Render 後台取得「外部連線字串」
+
+> 連線字串到底要去哪裡拿？Render 後台早就把「圖書館地址＋門禁卡」準備好了，你只需要**複製**，不要自己打字（打錯一個字就全部連不上）。
+
+請照下列步驟操作：
+
+1. 用瀏覽器登入 [Render 控制台](https://dashboard.render.com/)。
+2. 在左側選單點 **Databases**，再點進你的 PostgreSQL 資料庫服務。
+3. 在頁面上方找到並點擊 **Connect** 按鈕，會展開連線資訊面板。
+4. 面板裡有兩個長得很像的欄位，千萬別拿錯：
+   - **Internal Database URL**：給「住在 Render 內部的程式」用的網址，**從你家的電腦連不上**。
+   - **External Database URL**：給「從外面連進去」用的網址，**要複製的就是這一個**。
+5. 點 **External Database URL** 右邊的複製圖示，把它貼到 `.env` 的 `DATABASE_URL=` 後面（做法見 [§3.2](#32-建立-env-檔案)）。
+
+注意事項：
+
+- Render 給的 `External Database URL` 通常已經自帶 `?sslmode=require`，意思是「強制使用 SSL 加密連線」，**直接照抄即可，不要刪掉**。
+- 這串網址含有你的**真實密碼**，只可以放進 `.env`。絕對不要貼到 GitHub、聊天室、作業共用的共筆文件等任何別人看得到的地方。
+- 若你目前的 IP 不在白名單內，即使複製對了也會連不上，請到該資料庫的 **Access** 分頁加入你的 IP（詳見 [§6 FAQ #1](#1-connection-refused-或-could-not-connect)）。
 
 ---
 
@@ -164,7 +185,7 @@ conn = psycopg.connect("postgresql://postgres:PASSWORD@HOST:5432/db_demo")
 
 > ⚠️ **請不要用記事本「另存新檔」後手動改名成 `.env`**，在 Windows 上很容易不小心存成 `.env.txt`。建議直接使用 VS Code：新增檔案 → 儲存時檔名輸入 `.env`，VS Code 就會正確建立。
 
-`.env` 的內容如下（**請將 `你的使用者`、`你的密碼`、`你的主機`、`你的資料庫` 替換成老師提供的真實資訊**）：
+`.env` 的內容如下（**請將 `你的使用者`、`你的密碼`、`你的主機`、`你的資料庫` 替換成真實資訊**。還不知道這些值從哪裡來？請直接參考 [§1.1 從 Render 後台複製 `External Database URL`](#11-從-render-後台取得外部連線字串)，或者向老師索取）：
 
 ```
 DATABASE_URL=postgresql://你的使用者:你的密碼@你的主機:5432/你的資料庫
@@ -597,7 +618,7 @@ could not connect to host "xxx": Connection refused
 
 **解法**：
 
-1. 回到 Render 後台，複製 `Internal Database URL` 或 `External Database URL` 貼到 `.env`，**務必用複製，不要手動打字**。
+1. 回到 Render 後台複製連線字串（記得要拿 **`External Database URL`**，不是 `Internal Database URL`），貼到 `.env`，**務必用複製，不要手動打字**。不知道在哪裡找，請照 [§1.1](#11-從-render-後台取得外部連線字串) 操作。
 2. 確認網址裡的埠號是 `5432`。
 3. 到 Render 後台的 PostgreSQL 頁面，檢查 **Access** 設定：將目前的 IP 加入白名單（或先暫時開放所有 IP，確認可連線後再收緊）。
 
