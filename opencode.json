@@ -6,6 +6,8 @@
       "type": "local",
       "command": [
         "uvx",
+        "--from", "postgres-mcp",
+        "--with", "mcp<2",
         "postgres-mcp",
         "--access-mode=unrestricted"
       ],
