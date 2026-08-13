@@ -138,6 +138,10 @@ cython_debug/
 # opencode local config (may contain secrets)
 opencode.json
 
+. opencode.json
+.opencode/
+
+
 # IDE
 .vscode/
 .idea/
