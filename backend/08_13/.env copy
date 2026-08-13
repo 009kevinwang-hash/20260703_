@@ -1,0 +1,15 @@
+#自己的
+# DATABASE_URL=postgresql://postgres:WRONG_PASSWORD@你的主機:5432/你的資料庫
+DATABASE_URL=postgresql://saadmin:BoZHOBVFnopchaPFDgJC6Kx4wbNVh2lB@dpg-d9rcoqv10e5c73founo0-a.singapore-postgres.render.com/db_test001_m3tr
+
+#postgresql://saadmin:BoZHOBVFnopchaPFDgJC6Kx4wbNVh2lB@dpg-d9rcoqv10e5c73founo0-a.singapore-postgres.render.com/db_test001_m3tr
+
+# 老師的
+# ```env
+# # Render PostgreSQL 外部連線字串
+# POSTGRES_URL=postgresql://your_user:your_password@your_host.render.com/your_db_name?sslmode=require
+# POSTGRES_URL=   render =?sslmode=require
+# ```
+# *(請將上述連線內容替換為你真實的 Render 帳密與 Host，結尾建議加上 `?sslmode=require`)*
+#render
+# postgresql://saadmin:BoZHOBVFnopchaPFDgJC6Kx4wbNVh2lB@dpg-d9rcoqv10e5c73founo0-a.singapore-postgres.render.com/db_test001_m3tr
